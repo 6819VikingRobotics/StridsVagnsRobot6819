@@ -25,6 +25,8 @@ import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.AnalogInput;
+import edu.wpi.first.wpilibj.Ultrasonic;
 
 
 public class Robot extends TimedRobot 
@@ -41,6 +43,7 @@ public class Robot extends TimedRobot
   boolean buttonClicked;
   KnappSpak knappSpak = new KnappSpak(5);
   short ammo;
+  Ultrasonic sensor = new Ultrasonic(1, 0);
   
   PowerDistributionPanel pdp = new PowerDistributionPanel();
   
@@ -57,6 +60,8 @@ public class Robot extends TimedRobot
     rightDrive.setInverted(true);
     rightShooter.setInverted(true);
     servo.setBounds(2, 0, 0, 0, 1);
+    sensor.setAutomaticMode(true);
+
   }
 
 
@@ -83,13 +88,23 @@ public class Robot extends TimedRobot
     modeChecker();
     
     ammoCounter();
+
+    distanceCheck();
+
   }
 
 
 
    
+//Stoppar alla motorer vid avstånd närmare än 20 cm
+  void distanceCheck()
+  {
+    while(sensor.getRangeMM() < 200)
+    {
+     speed = 0;
+    }
 
-  
+  }
 
   void shoot(){
 
@@ -99,7 +114,7 @@ public class Robot extends TimedRobot
       rightShooter.set(ControlMode.PercentOutput, 1);
       leftShooter.set(ControlMode.PercentOutput, 1); 
     // Kontrolerar FeederHastigheten
-    feeder.set(ControlMode.PercentOutput, -0.5);
+    feeder.set(ControlMode.PercentOutput, -0.3);
     }
     else{
       rightShooter.set(ControlMode.PercentOutput, 0);
