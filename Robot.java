@@ -43,6 +43,7 @@ public class Robot extends TimedRobot
   boolean buttonClicked;
   KnappSpak knappSpak = new KnappSpak(5);
   short ammo;
+  boolean catchMode = false;
   Ultrasonic sensor = new Ultrasonic(1, 0);
   
   PowerDistributionPanel pdp = new PowerDistributionPanel();
@@ -90,7 +91,8 @@ public class Robot extends TimedRobot
     ammoCounter();
 
     distanceCheck();
-
+    
+ 
   }
 
 
@@ -101,16 +103,29 @@ public class Robot extends TimedRobot
   {
     while(sensor.getRangeMM() < 200)
     {
-     speed = 0;
+
     }
 
   }
 
   void shoot(){
-
+  if(joystick.getRawButtonPressed(10))
+  { 
+   
+   
+    if(catchMode != true)
+    {
+catchMode = true;
+    }
+    else
+    {
+      catchMode = false;
+    }
+    
+  }
     if (joystick.getRawButton(2))
     {
-      
+     
       rightShooter.set(ControlMode.PercentOutput, 1);
       leftShooter.set(ControlMode.PercentOutput, 1); 
     // Kontrolerar FeederHastigheten
@@ -122,8 +137,20 @@ public class Robot extends TimedRobot
     // Kontrolerar FeederHastigheten
     feeder.set(ControlMode.PercentOutput, -0);
     }
-  
+    //Togglar "CatchMode" med hjälp av input 10
+    if (catchMode == true)
+    {
+      rightShooter.set(ControlMode.PercentOutput, 0.7);
+      leftShooter.set(ControlMode.PercentOutput, 0.7); 
+    // Kontrolerar FeederHastigheten
+    feeder.set(ControlMode.PercentOutput, -0.2);
   }
+    }
+
+
+  
+ 
+  
     
     
 
@@ -155,9 +182,15 @@ public class Robot extends TimedRobot
   
   
  
+
+   
+
+  
+ 
  
 void drive()
 {
+  //Sänker hastigheten på svägning medans man håller inne en knapp
  if(joystick.getRawButton(6))
   {
     leftDrive.set(getThrottle() * speed + getSteer() * turnSpeed*0.4);
@@ -192,6 +225,7 @@ void berserk()
 
 void modeChecker()
 { 
+  //Checkar vilket lage den ar istalld på'
   if(driveSpeed == false){
    if(joystick.getRawButtonPressed(9))
    {
@@ -232,6 +266,7 @@ if (driveSpeed == true)
   double getThrottle()
   {
     return -joystick.getRawAxis(1);
+
   }
 
   double getSteer()
